@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional App - Welcome</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome to Professional App</h1>
+            <p>Secure, scalable, and professional Node.js application</p>
+        </header>
+        
+        <div id="auth-section" class="auth-card">
+            <div id="auth-logged-out">
+                <div id="auth-tabs" class="auth-tabs">
+                    <button id="tab-signup" class="tab-btn active">Sign Up</button>
+                    <button id="tab-signin" class="tab-btn">Sign In</button>
+                </div>
+
+                <div id="signup-form" class="auth-form">
+                    <h2>Create Account</h2>
+                    <form id="signup-form-element">
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" name="email" required autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" name="password" required minlength="6" autocomplete="new-password">
+                        </div>
+                        <div id="signup-error" class="error-message"></div>
+                        <div id="signup-success" class="success-message"></div>
+                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                    </form>
+                </div>
+
+                <div id="signin-form" class="auth-form" style="display: none;">
+                    <h2>Sign In</h2>
+                    <form id="signin-form-element">
+                        <div class="form-group">
+                            <label for="signin-email">Email</label>
+                            <input type="email" id="signin-email" name="email" required autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="signin-password">Password</label>
+                            <input type="password" id="signin-password" name="password" required autocomplete="current-password">
+                        </div>
+                        <div id="signin-error" class="error-message"></div>
+                        <div id="signin-success" class="success-message"></div>
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="auth-logged-in" style="display: none;">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                            <circle cx="32" cy="32" r="32" fill="#667eea"/>
+                            <path d="M32 20C36.4183 20 40 23.5817 40 28C40 32.4183 36.4183 36 32 36C27.5817 36 24 32.4183 24 28C24 23.5817 27.5817 20 32 20Z" fill="white"/>
+                            <path d="M32 40C24.268 40 18 43.5817 18 48V50H46V48C46 43.5817 39.732 40 32 40Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <p id="user-email" class="user-email"></p>
+                </div>
+                <button id="signout" class="btn btn-signout">Sign Out</button>
+            </div>
+        </div>
+        
+        <main id="main-content" style="display: none;">
+            <div class="success-banner" id="success-banner">
+                <div class="success-content">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor"/>
+                    </svg>
+                    <span>Successfully signed in! Welcome to the application.</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Interactive Counter</h2>
+                <div id="counter-container">
+                    <div class="counter-section">
+                        <button id="decrement" class="btn btn-secondary">-</button>
+                        <span id="count" class="counter-value">0</span>
+                        <button id="increment" class="btn btn-primary">+</button>
+                    </div>
+                    <button id="reset" class="btn btn-reset">Reset</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Application Features</h2>
+                <ul>
+                    <li>✅ Secure authentication with JWT</li>
+                    <li>✅ PostgreSQL database integration</li>
+                    <li>✅ AWS Secrets Manager for credentials</li>
+                    <li>✅ Professional and responsive UI</li>
+                    <li>✅ High availability architecture</li>
+                </ul>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2024 Professional App. Built with AWS RDS PostgreSQL</p>
+        </footer>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+version: 0.2
+
+# Static content bucket for CloudFront (change if using a different bucket name)
+env:
+  variables:
+    STATIC_CONTENT_BUCKET: "static-content-filess"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - 'echo "Installing Node.js dependencies..."'
+      - cd $CODEBUILD_SRC_DIR/backend
+      - npm install
+
+  pre_build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - 'echo "Running pre-build checks"'
+      - 'echo "Verifying application structure..."'
+      - |
+        if [ ! -f backend/server.js ]; then
+          echo "ERROR: backend/server.js not found!"
+          exit 1
+        fi
+      - |
+        if [ ! -d frontend ]; then
+          echo "ERROR: frontend directory not found!"
+          exit 1
+        fi
+      - |
+        if [ ! -d backend/routes ]; then
+          echo "ERROR: backend/routes directory not found!"
+          exit 1
+        fi
+      - |
+        if [ ! -d backend/migrations ]; then
+          echo "ERROR: backend/migrations directory not found!"
+          exit 1
+        fi
+      - |
+        if [ ! -f backend/scripts/run-migrations.js ]; then
+          echo "ERROR: backend/scripts/run-migrations.js not found!"
+          exit 1
+        fi
+
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - 'echo "Preparing artifacts..."'
+      - 'echo "Note: No build step required for Node.js application"'
+      - 'echo "Organizing frontend and backend for deployment..."'
+
+  post_build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - 'echo "Preparing deployment artifacts..."'
+      - 'echo "Organizing backend and scripts for CodeDeploy..."'
+      - |
+        mkdir -p artifacts
+      - 'echo "Copying backend (exclude node_modules - install.sh runs npm install on EC2)..."'
+      - |
+        cp -r backend artifacts/
+        rm -rf artifacts/backend/node_modules
+      - |
+        if [ ! -d scripts ]; then
+          echo "ERROR: scripts/ directory not found (required for CodeDeploy hooks)"
+          exit 1
+        fi
+        cp -r scripts artifacts/
+      - |
+        find artifacts/scripts -name "*.sh" -exec sed -i 's/\r$//' {} \;
+        echo "✓ Shell scripts converted to Unix line endings (LF)"
+      - |
+        cp appspec.yml artifacts/ 2>/dev/null || cp app/app/appspec.yml artifacts/ 2>/dev/null || cp app/appspec.yml artifacts/ 2>/dev/null
+        if [ ! -f artifacts/appspec.yml ]; then
+          echo "ERROR: appspec.yml not found in artifact. Tried: appspec.yml, app/app/appspec.yml, app/appspec.yml"
+          exit 1
+        fi
+        echo "✓ appspec.yml included in deployment artifact"
+      - 'echo "Verifying migration files are included..."'
+      - |
+        if [ -f artifacts/backend/scripts/run-migrations.js ] && [ -d artifacts/backend/migrations ]; then
+          echo "✓ Migration runner and migration files included"
+          find artifacts/backend/migrations -name "*.sql" 2>/dev/null | wc -l | xargs echo "  Migration files:"
+        else
+          echo "WARNING: Migration files may be missing"
+        fi
+      - 'echo "Uploading frontend to static content bucket (CloudFront) - sync directly from source..."'
+      - |
+        if [ -d frontend ]; then
+          aws s3 sync frontend s3://$STATIC_CONTENT_BUCKET/ --delete
+          echo "✓ Frontend synced to s3://$STATIC_CONTENT_BUCKET/"
+        fi
+      - 'echo "Deployment artifact ready (CodePipeline will zip when passing to CodeDeploy - no double-zip)"'
+
+artifacts:
+  base-directory: artifacts
+  files:
+    - '**/*'
+  name: app-deployment-artifact
+
+  ##testing
