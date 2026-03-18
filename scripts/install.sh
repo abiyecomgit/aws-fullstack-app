@@ -16,7 +16,7 @@ echo "Verifying Node.js installation..."
 if ! command -v node &> /dev/null; then
     echo "WARNING: Node.js not found. Should be installed via golden image."
     echo "Installing Node.js 18 as fallback..."
-    curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+    curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
     sudo dnf install -y nodejs
 else
     echo "✓ Node.js found (installed via golden image)"
